@@ -80,5 +80,5 @@ button:hover {
 .tile:hover {
   box-shadow: inset 0 0 0 3px blue;
   /* background-color: rgb(44, 41, 207); */
-  color: rgb(44, 41, 207);
+  /* color: rgb(44, 41, 207); */
 }

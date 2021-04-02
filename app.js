@@ -8,6 +8,7 @@ const gameSettings = {
   usedTiles: [],
   revealedTiles: 0,
   clickedTilesContent: null,
+  clickedTiles: 0,
 };
 
 const startGame = (event) => {
@@ -23,6 +24,7 @@ const startGame = (event) => {
   }
   gameSettings.usedNumbers.length = 0;
   gameSettings.usedTiles.length = 0;
+  gameSettings.clickedTiles = 0;
 };
 
 const addMarks = (tiles) => {
@@ -67,27 +69,33 @@ const displayTiles = (amount) => {
   }
 };
 
-const resetTiles = (event) => {
+const resetTiles = (event, flag) => {
   const allTiles = document.querySelectorAll(".tile");
 
   allTiles.forEach((tile) => {
     tile.removeEventListener("click", discoverTile);
   });
-  setTimeout(() => {
-    gameSettings.clickedTilesContent = null;
-    gameSettings.revealedTiles = 0;
+  setTimeout(
+    () => {
+      gameSettings.clickedTilesContent = null;
+      gameSettings.revealedTiles = 0;
 
-    allTiles.forEach((element) => {
-      element.style.color = "rgb(42, 184, 250)";
-    });
+      allTiles.forEach((element) => {
+        element.style.color = "rgb(42, 184, 250)";
+      });
 
-    allTiles.forEach((tile) => {
-      tile.addEventListener("click", discoverTile);
-    });
-  }, 1500);
+      allTiles.forEach((tile) => {
+        tile.addEventListener("click", discoverTile);
+      });
+    },
+    flag ? 0 : 1500
+  );
 };
 
 const discoverTile = (event) => {
+  let isCorrect = false;
+  gameSettings.clickedTiles = gameSettings.clickedTiles + 1;
+
   let { revealedTiles, clickedTilesContent } = gameSettings;
 
   if (clickedTilesContent === event.target.textContent) {
@@ -101,9 +109,13 @@ const discoverTile = (event) => {
       tile.classList.add("reject");
       tile.removeEventListener("click", discoverTile);
     });
+    if (allTiles.length === 2) {
+      winGame();
+    }
+    isCorrect = true;
   }
   if (revealedTiles === 1) {
-    resetTiles(event);
+    resetTiles(event, isCorrect);
   }
   gameSettings.clickedTilesContent = event.target.textContent;
   event.target.style.color = "white";
@@ -118,3 +130,10 @@ const drawGrid = (row, col) => {
 difficultyButtons.forEach((button) => {
   button.addEventListener("click", startGame);
 });
+
+const winGame = () => {
+  gameBoard.innerHTML = `
+  <h1>You won! miszczó</h1>
+  <h3>Clicked ${gameSettings.clickedTiles} times</h3>
+  `;
+};
